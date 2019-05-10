@@ -109,5 +109,5 @@ class DataParser:
             return name, mz_data
 
     def __parseGroundTruth(self, filename):
-        arr = np.genfromtxt(filename, delimiter=';', dtype=None)
+        arr = np.genfromtxt(filename, delimiter=';', dtype=None, encoding='ascii')
         return arr
