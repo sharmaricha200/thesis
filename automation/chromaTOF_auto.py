@@ -47,7 +47,8 @@ def export_peaktable(compd_num):
             time.sleep(DELAY)
             pyautogui.click(button='left')
             time.sleep(DELAY)
-            counter = counter +1
+	    if counter != 38:
+		counter = counter +1
             counter_name = counter_name +1
             press_nav_arrow('down', counter)
             time.sleep(DELAY)
