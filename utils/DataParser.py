@@ -29,7 +29,7 @@ class DataParser:
         name_re = re.compile('NAME: (.*)')
         peaks_re = re.compile('Num Peaks: ([0-9]*)')
         state = 0
-        ret = {}
+        ret = []
         with open(filename, 'r') as f:
             for l in f:
                 line = l.strip()
@@ -40,6 +40,7 @@ class DataParser:
                         print('File format error on file: ' + filename)
                         raise Exception
                     name = name_match.group(1)
+                    mz_data['name'] = name
                     state = 1
                     continue
                 if state == 1:
@@ -55,7 +56,7 @@ class DataParser:
                     continue
                 if state == 2:
                     if not line:
-                        ret[name] = mz_data;
+                        ret.append(mz_data);
                         state = 0
                     else:
                         for pair in line.split(';'):
