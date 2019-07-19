@@ -11,7 +11,7 @@ class AlgoModel:
         return ind[np.argsort(mz_intensity[ind])]
 
     def __get_molecular_ion(self, mz_intensity):
-        return np.argmax(mz_intensity)
+        return mz_intensity[0][-1]
 
     def __get_percentage_lib_hit(self, mz_intensity_compd, mz_intensity_lib):
         mz_compd_list = np.where(mz_intensity_compd != 0)
@@ -20,10 +20,10 @@ class AlgoModel:
         lib_in_compd = np.isin(mz_lib_list, mz_compd_list).sum()
         percentage_compd_in_lib_hit_present = compd_in_lib * 100 / len(mz_compd_list[0])
         percentage_lib_hit_in_compd_present = lib_in_compd * 100 / len(mz_lib_list[0])
-        print(percentage_compd_in_lib_hit_present)
+        print(percentage_lib_hit_in_compd_present)
         return percentage_lib_hit_in_compd_present
 
-    def predict(self, name, hit, sample):
+    def predict(self, hit, sample):
         score = hit['score']
         confidence = 0
         if score >= self.SIMILARITY_THRESHOLD:
@@ -33,9 +33,10 @@ class AlgoModel:
             top_three_ion_list_hit = self.__get_top_three(hit_spectrum)
             hit_list = np.where(hit_spectrum!= 0)
             sample_list = np.where(sample_spectrum != 0)
-            molecular_ion_hit = self.__get_molecular_ion(sample_spectrum)
+            molecular_ion_hit = self.__get_molecular_ion(sample_list)
+            molecular_ion_sample = self.__get_molecular_ion(hit_list)
             percentage_lib_hit_present = self.__get_percentage_lib_hit(sample_spectrum, hit_spectrum)
-            if np.isin(top_three_ion_list_hit, sample_list).sum() >= 3:
+            if np.isin(top_three_ion_list_hit, sample_list).sum() >= 2:
                 if np.isin(molecular_ion_hit, sample_list).sum() > 0:
                     if percentage_lib_hit_present >= self.PERCENT_THRESHOLD:
                         #print("Prediction is : High Confidence")
@@ -55,7 +56,7 @@ class AlgoModel:
             confidence = 0
             #print("Prediction is : Low Confidence")
 
-        return percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample
+        return confidence, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample
         #print("Name of the compound is:", name)
         #print("The similarity score is :", score)
         #print("The top three ions in the compound are:", top_three_ion_list_sample)
