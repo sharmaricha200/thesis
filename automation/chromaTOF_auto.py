@@ -10,7 +10,8 @@ pyautogui.FAILSAFE = True
 time.sleep(10)
 
 # Setting a variable delay to allow chromaTOF to perform tasks.
-DELAY=0.5
+DELAY = 0.5
+
 
 # Defining a function for using navigation keys, with parameters type for the direction
 # and num for number of times the key needs to be pressed.
@@ -19,13 +20,39 @@ def press_nav_arrow(type, num):
         pyautogui.typewrite([type])
         time.sleep(DELAY)
 
+
 # Defining a function to export the peak table, with a parameter compound number,
 # to allow the program to exit when completed
 
 def export_peaktable(compd_num):
+    pyautogui.moveTo(451, 179, duration=DELAY)
+    time.sleep(DELAY)
+    pyautogui.click(button='left')
+    time.sleep(DELAY)
+    pyautogui.moveTo(1059, 513, duration=DELAY)
+    pyautogui.click(button='right')
+    time.sleep(DELAY)
+    press_nav_arrow('down', 5)
+    time.sleep(DELAY)
+    pyautogui.press('enter')
+    time.sleep(DELAY)
+    pyautogui.press('enter')
+    time.sleep(DELAY)
+    pyautogui.press('enter')
+    time.sleep(DELAY)
+    pyautogui.press('enter')
+
+    counter = 0
+    counter_name = 1
+    for i in range(0, compd_num):
         pyautogui.moveTo(451, 179, duration=DELAY)
         time.sleep(DELAY)
         pyautogui.click(button='left')
+        time.sleep(DELAY)
+        if counter != 38:
+            counter = counter + 1
+        counter_name = counter_name + 1
+        press_nav_arrow('down', counter)
         time.sleep(DELAY)
         pyautogui.moveTo(1059, 513, duration=DELAY)
         pyautogui.click(button='right')
@@ -36,37 +63,11 @@ def export_peaktable(compd_num):
         time.sleep(DELAY)
         pyautogui.press('enter')
         time.sleep(DELAY)
-        pyautogui.press('enter')
+        pyautogui.press('backspace')
+        time.sleep(DELAY)
+        pyautogui.typewrite(str(counter_name))
         time.sleep(DELAY)
         pyautogui.press('enter')
 
-        counter = 0
-        counter_name = 1
-        for i in range(0, compd_num):
-            pyautogui.moveTo(451, 179, duration=DELAY)
-            time.sleep(DELAY)
-            pyautogui.click(button='left')
-            time.sleep(DELAY)
-	    if counter != 38:
-		counter = counter +1
-            counter_name = counter_name +1
-            press_nav_arrow('down', counter)
-            time.sleep(DELAY)
-            pyautogui.moveTo(1059, 513, duration=DELAY)
-            pyautogui.click(button='right')
-            time.sleep(DELAY)
-            press_nav_arrow('down', 5)
-            time.sleep(DELAY)
-            pyautogui.press('enter')
-            time.sleep(DELAY)
-            pyautogui.press('enter')
-            time.sleep(DELAY)
-            pyautogui.press('backspace')
-            time.sleep(DELAY)
-            pyautogui.typewrite(str(counter_name))
-            time.sleep(DELAY)
-            pyautogui.press('enter')
 
 export_peaktable(10000)
-
-
