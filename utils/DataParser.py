@@ -10,6 +10,64 @@ class DataParser:
         self.data = []
         self.ROOT_DATA_DIR = rootDataDir
 
+    #parses all the files in given rootDataDir into a datastructure.
+    #the rootDataDir is assumed to have following file organization:
+    #rootDataDir
+    #└── samplen
+    #    ├── ground_truth.csv
+    #    ├── hits
+    #    │   ├── 1.msp
+    #    │   ├── 2.msp
+    #    │   ├── 3.msp
+    #    │   └── ...
+    #    └── peak_true.msp
+    #Output is datastructure:
+    #ret
+    #   |
+    #   ['hits']
+    #   |      |__[name_0]
+    #   |      |    |__['peaks']
+    #   |      |    |__['spectrum']
+    #   |      |    |__['score']
+    #   |      |__[name_1]
+    #   |      |    |__['peaks']
+    #   |      |    |__['spectrum']
+    #   |      |    |__['score']
+    #   |      .
+    #   |      .
+    #   |      .
+    #   |      |__[name_n]
+    #   |           |__['peaks']
+    #   |           |__['spectrum']
+    #   |           |__['score']
+    #   |
+    #   ['sample']
+    #   |        |__[0]
+    #   |        |    |__['name']
+    #   |        |    |__['peaks']
+    #   |        |    |__['spectrum']
+    #   |        |__[1]
+    #   |        |    |__['name']
+    #   |        |    |__['peaks']
+    #   |        |    |__['spectrum']
+    #   |        .
+    #   |        .
+    #   |        .
+    #   |        |__[l]
+    #   |             |__['name']
+    #   |             |__['peaks']
+    #   |             |__['spectrum']
+    #   ['truth']
+    #           |__[0]
+    #           |    |__(peak_num, name, confidence)
+    #           |__[1]
+    #           |    |__(peak_num, name, confidence)
+    #           .
+    #           .
+    #           .
+    #           |__[m]
+    #                |__(peak_num, name, confidence)
+
     def parseData(self):
         dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
         for dir in dirs:
@@ -32,7 +90,7 @@ class DataParser:
         peaks_re = re.compile('Num Peaks: ([0-9]*)')
         state = 0
         ret = []
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding="latin-1") as f:
             for l in f:
                 line = l.strip()
                 if state == 0:
@@ -72,7 +130,7 @@ class DataParser:
 
     def __parseHitsFile(self, filename):
         try:
-            msp = open(filename, "r")
+            msp = open(filename, "r", encoding="latin-1")
         except Exception as err:
             print("Error opening file: " + filename)
             raise err
