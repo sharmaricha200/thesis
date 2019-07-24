@@ -20,7 +20,7 @@ class AlgoModel:
         lib_in_compd = np.isin(mz_lib_list, mz_compd_list).sum()
         percentage_compd_in_lib_hit_present = compd_in_lib * 100 / len(mz_compd_list[0])
         percentage_lib_hit_in_compd_present = lib_in_compd * 100 / len(mz_lib_list[0])
-        print(percentage_lib_hit_in_compd_present)
+        #print(percentage_lib_hit_in_compd_present)
         return percentage_lib_hit_in_compd_present
 
     def predict(self, hit, sample):

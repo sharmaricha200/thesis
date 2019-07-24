@@ -1,7 +1,6 @@
 """
 Usage:
-  run.py ml train -d=<data_dir> -e=<epochs>
-  run.py ml test -d=<data_dir>
+  run.py ml (train|test) -d=<data_dir> -s=<save_file_path> [--e=<epochs>]
   run.py algo -d=<data_dir> [--st=<similarity_threshold>] [--pt=<percent_threshold>]
   run.py -h
 
@@ -10,7 +9,8 @@ Options:
   -d=<data_dir>                 Data directory path.
   --st=<similarity_threshold>   Similarity threshold [default: 600].
   --pt=<percent threshold>      Percent threshold [default: 80].
-  -e=<epochs>                   Number of epochs [default: ]
+  --e=<epochs>                  Number of epochs [default: 30]
+  -s=<save_file_path>           File path where model is saved
 """
 
 from docopt import docopt
@@ -40,24 +40,26 @@ import numpy as np
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='Thesis')
-    print(args)
+    #print(args)
     parser = dp.DataParser(args['-d'])
     data = parser.parseData()
     hits = data[0]['hits']
     sample = data[0]['sample']
-    ground_truth = data[0]['truth']
-    np.random.shuffle(ground_truth)
     rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
     i = 0
     m = 1
     if args['ml']:
-        dnn = ml.DNNModel()
-        train = np.empty([100, 1602])
-        gt = np.empty([100, 2])
+        dnn = ml.DNNModel(args['-s'])
+        if args['train']:
+            ground_truth = data[0]['truth_train']
+        elif args['test']:
+            ground_truth = data[0]['truth_test']
+
+        data = np.empty([len(ground_truth), 1602])
+        gt = np.empty([len(ground_truth), 2])
         for (peak_num, name, confidence) in ground_truth:
             if name in hits and sample[peak_num - 1]['name'] == name:
-                #print("Name: " + name)
-                train[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
+                data[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
                 if confidence == 2:
                     gt[i][0] = 0
                     gt[i][1] = 1
@@ -68,23 +70,32 @@ if __name__ == '__main__':
             else:
                 #print("Name not in hits: " + name)
                 pass
-        test = train[25:32]
-        test_y = gt[25:32]
-        train = train[0:25]
-        gt = gt[0:25]
-        dnn.train(train, gt, int(args['-e']))
-        pred = dnn.predict(test)
-        print(pred)
-        pred[pred <= 0.5] = 0
-        pred[pred > 0.5] = 1
-        print("Test--->")
-        print(test_y)
-        dnn.evaluate(test, test_y)
-        dnn.save()
+        x = data[:i]
+        y = gt[:i]
+        if args['train']:
+            dnn.train(x, y, int(args['--e']))
+        elif args['test']:
+            dnn.load()
+            dnn.evaluate(x, y)
+            pred = dnn.predict(x)
+            pred[pred <= 0.5] = 0
+            pred[pred > 0.5] = 1
+            print("Test--->")
+            print(y)
+            print("Prediction--->")
+            print(pred)
+
     elif args['algo']:
         model = am.AlgoModel(int(args['--st']), int(args['--pt']))
         pred = []
         gt_conf = []
+        ground_truth = data[0]['truth_train']
+        for (peak_num, name, confidence) in ground_truth:
+            if name in hits and sample[peak_num - 1]['name'] == name:
+                conf, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample = model.predict(hits[name], sample[peak_num - 1])
+                pred.append(conf)
+                gt_conf.append(confidence)
+        ground_truth = data[0]['truth_test']
         for (peak_num, name, confidence) in ground_truth:
             if name in hits and sample[peak_num - 1]['name'] == name:
                 conf, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample = model.predict(hits[name], sample[peak_num - 1])
@@ -92,10 +103,11 @@ if __name__ == '__main__':
                 gt_conf.append(confidence)
         pred = np.array(pred)
         gt_conf = np.array(gt_conf)
+        print("Test -->")
         print(gt_conf)
-        hehe = pred == gt_conf
-        print(np.sum(hehe) / hehe.size * 100)
-    print("pred --->")
-    print(pred)
+        right = pred == gt_conf
+        print(np.sum(right) / right.size * 100)
+        print("Prediction --->")
+        print(pred)
 
 

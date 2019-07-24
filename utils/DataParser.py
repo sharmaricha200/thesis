@@ -74,7 +74,8 @@ class DataParser:
             currPath = os.path.join(self.ROOT_DATA_DIR, dir)
             hitsPath = os.path.join(currPath, "hits")
             sampleFile = os.path.join(currPath, "peak_true.msp")
-            groundTruthFile = os.path.join(currPath, "ground_truth.csv")
+            groundTruthTrainFile = os.path.join(currPath, "train.csv")
+            groundTruthTestFile = os.path.join(currPath, "test.csv")
             hitsFiles = next(os.walk(hitsPath))[2]
             hits = {}
             for hitsFile in hitsFiles:
@@ -82,7 +83,8 @@ class DataParser:
                 name, mzdata = self.__parseHitsFile(path)
                 hits[name] = mzdata
             self.data.append({'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
-                              'truth': self.__parseGroundTruth(groundTruthFile)})
+                              'truth_train': self.__parseGroundTruth(groundTruthTrainFile),
+                              'truth_test': self.__parseGroundTruth(groundTruthTestFile)})
             return self.data
 
     def __parseSampleFile(self, filename):

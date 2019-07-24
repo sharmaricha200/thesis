@@ -10,8 +10,9 @@ from keras.models import load_model
 MAX_X=801
 
 class DNNModel:
-    def __init__(self, kernel_reg = 0.01, bias_reg = 0.01):
+    def __init__(self, model_path, kernel_reg = 0.01, bias_reg = 0.01):
         self.model = None
+        self.model_path = model_path
         self.kernel_reg = kernel_reg
         self.bias_reg = bias_reg
 
@@ -32,11 +33,11 @@ class DNNModel:
         self.model.fit(x_train, y_train, epochs=rep)
 
     def save(self):
-        self.model.save("model.h5")
+        self.model.save(self.model_path)
         print("Saved model to disk.")
 
     def load(self):
-        self.model = load_model("model.h5");
+        self.model = load_model(self.model_path);
 
     def predict(self, x_test):
         return self.model.predict(x_test)
