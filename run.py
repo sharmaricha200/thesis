@@ -55,11 +55,11 @@ if __name__ == '__main__':
         elif args['test']:
             ground_truth = data[0]['truth_test']
 
-        data = np.empty([len(ground_truth), 1602])
+        dt = np.empty([len(ground_truth), 1602])
         gt = np.empty([len(ground_truth), 2])
         for (peak_num, name, confidence) in ground_truth:
             if name in hits and sample[peak_num - 1]['name'] == name:
-                data[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
+                dt[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
                 if confidence == 2:
                     gt[i][0] = 0
                     gt[i][1] = 1
@@ -70,7 +70,7 @@ if __name__ == '__main__':
             else:
                 #print("Name not in hits: " + name)
                 pass
-        x = data[:i]
+        x = dt[:i]
         y = gt[:i]
         if args['train']:
             dnn.train(x, y, int(args['--e']))
