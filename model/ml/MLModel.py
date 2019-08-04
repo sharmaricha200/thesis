@@ -6,6 +6,9 @@ from keras.regularizers import l2
 from keras.utils import np_utils
 from keras.utils.vis_utils import plot_model
 from keras.models import load_model
+import os
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_pdf
 
 MAX_X=801
 
@@ -30,7 +33,27 @@ class DNNModel:
                            metrics=['accuracy'])
         self.model.summary()
         plot_model(self.model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
-        self.model.fit(x_train, y_train, epochs=rep)
+        history = self.model.fit(x_train, y_train, epochs=rep)
+
+        fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
+        fig = plt.figure()
+        plt.plot(history.history['acc'])
+        plt.title('Model accuracy')
+        plt.ylabel('Accuracy')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Test'], loc='upper left')
+        pdf.savefig(fig)
+        plt.close()
+
+        fig = plt.figure()
+        plt.plot(history.history['loss'])
+        plt.title('Model loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Test'], loc='upper left')
+        pdf.savefig(fig)
+        plt.close()
 
     def save(self):
         self.model.save(self.model_path)
