@@ -14,14 +14,15 @@ class AlgoModel:
         return mz_intensity[0][-1]
 
     def __get_percentage_lib_hit(self, mz_intensity_compd, mz_intensity_lib):
-        mz_compd_list = np.where(mz_intensity_compd != 0)
-        mz_lib_list = np.where(mz_intensity_lib != 0)
+        mz_compd_list = np.where(mz_intensity_compd >= 20)
+        mz_lib_list = np.where(mz_intensity_lib >= 20)
         compd_in_lib = np.isin(mz_compd_list, mz_lib_list).sum()
         lib_in_compd = np.isin(mz_lib_list, mz_compd_list).sum()
         percentage_compd_in_lib_hit_present = compd_in_lib * 100 / len(mz_compd_list[0])
         percentage_lib_hit_in_compd_present = lib_in_compd * 100 / len(mz_lib_list[0])
         #print(percentage_lib_hit_in_compd_present)
-        return percentage_lib_hit_in_compd_present
+        #return percentage_lib_hit_in_compd_present
+        return max(percentage_compd_in_lib_hit_present, percentage_lib_hit_in_compd_present)
 
     def predict(self, hit, sample):
         score = hit['score']
@@ -29,12 +30,13 @@ class AlgoModel:
         if score >= self.SIMILARITY_THRESHOLD:
             sample_spectrum = sample['spectrum']
             hit_spectrum = hit['spectrum']
+            hit_spectrum[0:50] = 0
             top_three_ion_list_sample = self.__get_top_three(sample_spectrum)
             top_three_ion_list_hit = self.__get_top_three(hit_spectrum)
-            hit_list = np.where(hit_spectrum!= 0)
-            sample_list = np.where(sample_spectrum != 0)
-            molecular_ion_hit = self.__get_molecular_ion(sample_list)
-            molecular_ion_sample = self.__get_molecular_ion(hit_list)
+            hit_list = np.where(hit_spectrum >= 20)
+            sample_list = np.where(sample_spectrum >= 20)
+            molecular_ion_hit = self.__get_molecular_ion(hit_list)
+            molecular_ion_sample = self.__get_molecular_ion(sample_list)
             percentage_lib_hit_present = self.__get_percentage_lib_hit(sample_spectrum, hit_spectrum)
             if np.isin(top_three_ion_list_hit, sample_list).sum() >= 2:
                 if np.isin(molecular_ion_hit, sample_list).sum() > 0:
@@ -47,10 +49,6 @@ class AlgoModel:
                 else:
                     confidence = 1
                     #print("Prediction is : Medium Confidence")
-
-            else:
-                confidence = 0
-                #print("Prediction is : Low Confidence")
 
         else:
             confidence = 0
