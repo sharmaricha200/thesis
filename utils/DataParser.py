@@ -57,7 +57,17 @@ class DataParser:
     #   |             |__['name']
     #   |             |__['peaks']
     #   |             |__['spectrum']
-    #   ['truth']
+    #   ['truth_train']
+    #   |       |__[0]
+    #   |       |    |__(peak_num, name, confidence)
+    #   |       |__[1]
+    #   |       |    |__(peak_num, name, confidence)
+    #   |       .
+    #   |       .
+    #   |       .
+    #   |       |__[m]
+    #   |             |__(peak_num, name, confidence)
+    #   ['truth_test']
     #           |__[0]
     #           |    |__(peak_num, name, confidence)
     #           |__[1]
