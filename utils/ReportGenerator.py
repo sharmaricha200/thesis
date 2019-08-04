@@ -28,7 +28,7 @@ class ReportGenerator:
         file_path = os.path.join(self.report_path, sample_name)
         if not os.path.exists(file_path):
             os.mkdir(file_path)
-        fig_path = os.path.join(file_path, "report.pdf");
+        fig_path = os.path.join(file_path, "report.pdf")
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
         i = 0;
         for (peak_num, name, confidence) in valid_gt:
