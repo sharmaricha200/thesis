@@ -11,12 +11,14 @@ Options:
   --pt=<percent threshold>      Percent threshold [default: 80].
   --e=<epochs>                  Number of epochs [default: 30]
   -s=<save_file_path>           File path where model is saved
+  --version                     Show version
 """
 
 from docopt import docopt
 import sys
 import os
 
+# Adding modules to python path, so that they can be imported.
 ROOT_PATH = os.path.dirname(os.path.realpath(sys.argv[0]))
 sys.path.insert(0, ROOT_PATH + "/model/algorithmic")
 sys.path.insert(0, ROOT_PATH + "/model/ml")
@@ -39,7 +41,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='Thesis')
+    args = docopt(__doc__, version='1.0')
     #print(args)
     parser = dp.DataParser(args['-d'])
     data = parser.parseData()
