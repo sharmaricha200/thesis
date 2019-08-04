@@ -53,9 +53,9 @@ if __name__ == '__main__':
     #print(args)
     parser = dp.DataParser(args['-d'])
     data = parser.parseData()
+    sample_name = data[0]['name']
     hits = data[0]['hits']
     sample = data[0]['sample']
-    rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
     i = 0
     m = 1
     if args['ml']:
@@ -89,10 +89,9 @@ if __name__ == '__main__':
             dnn.evaluate(x, y)
             prediction = dnn.predict(x)
             pred = translate_pred(prediction)
-            i = 0
-            for (peak_num, name, confidence) in valid_gt:
-                print("{peak_num};{name};{confidence};{pred}".format(peak_num=peak_num, name=name, confidence=confidence,pred=pred[i]))
-                i = i + 1
+            rp = rg.ReportGenerator(ROOT_PATH + "/report", 'ml')
+            rp.report_csv(sample_name, valid_gt, pred)
+            rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
 
     elif args['algo']:
         import AlgoModel as am
@@ -110,8 +109,6 @@ if __name__ == '__main__':
         right = pred == gt_conf
         accuracy = np.sum(right) / right.size * 100
         print("acc = {acc}%".format(acc=accuracy))
-        i = 0
-        for (peak_num, name, confidence) in valid_gt:
-            print("{peak_num};{name};{confidence};{pred}".format(peak_num=peak_num, name=name, confidence=confidence,pred=pred[i]))
-            i = i+1
-        print(pred)
+        rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
+        rp.report_csv(sample_name, valid_gt, pred)
+        rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
