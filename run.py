@@ -56,8 +56,6 @@ if __name__ == '__main__':
     sample_name = data[0]['name']
     hits = data[0]['hits']
     sample = data[0]['sample']
-    i = 0
-    m = 1
     if args['ml']:
         import MLModel as ml
         dnn = ml.DNNModel(args['-s'])
@@ -70,6 +68,7 @@ if __name__ == '__main__':
         dt = np.empty([len(valid_gt), 1602])
         gt = np.empty([len(valid_gt), 2])
 
+        i = 0
         for (peak_num, name, confidence) in valid_gt:
             dt[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
             if confidence == 2:
