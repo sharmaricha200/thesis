@@ -92,7 +92,7 @@ class DataParser:
                 path = os.path.join(hitsPath, hitsFile)
                 name, mzdata = self.__parseHitsFile(path)
                 hits[name] = mzdata
-            self.data.append({'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
+            self.data.append({'name': os.path.basename(currPath),'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
                               'truth_train': self.__parseGroundTruth(groundTruthTrainFile),
                               'truth_test': self.__parseGroundTruth(groundTruthTestFile)})
             return self.data
