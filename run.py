@@ -50,7 +50,7 @@ def translate_pred(pred):
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
-    print(args)
+    #print(args)
     parser = dp.DataParser(args['-d'])
     all_data = parser.parseData(args['test'])
     if args['ml']:

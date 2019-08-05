@@ -77,7 +77,6 @@ class DataParser:
             else:
                 if os.path.basename(dir) == 'test':
                     continue
-            print(os.path.basename(dir))
             currPath = os.path.join(self.ROOT_DATA_DIR, dir)
             hitsPath = os.path.join(currPath, "hits")
             sampleFile = os.path.join(currPath, "peak_true.msp")
