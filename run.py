@@ -50,43 +50,47 @@ def translate_pred(pred):
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
-    #print(args)
+    print(args)
     parser = dp.DataParser(args['-d'])
-    data = parser.parseData()
-    sample_name = data[0]['name']
-    hits = data[0]['hits']
-    sample = data[0]['sample']
+    all_data = parser.parseData(args['test'])
     if args['ml']:
         import MLModel as ml
+        g_x = np.array([])
+        g_y = np.array([])
+        for data in all_data:
+            sample_name = data['name']
+            hits = data['hits']
+            sample = data['sample']
+            ground_truth = data['ground_truth']
+
+            valid_gt = get_valid_gt(ground_truth, sample)
+            dt = np.empty([len(valid_gt), 1602])
+            gt = np.empty([len(valid_gt), 2])
+
+            i = 0
+            for (peak_num, name, confidence) in valid_gt:
+                dt[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
+                if confidence == 2:
+                    gt[i][0] = 0
+                    gt[i][1] = 1
+                elif confidence == 1:
+                    gt[i][0] = 1
+                    gt[i][1] = 0
+                i = i + 1
+
+            if (g_x.size == 0):
+                g_x = dt[:i]
+                g_y = gt[:i]
+            else:
+                g_x = np.concatenate((g_x, dt[:i]))
+                g_y = np.concatena
         dnn = ml.DNNModel(args['-s'])
         if args['train']:
-            ground_truth = data[0]['truth_train']
-        elif args['test']:
-            ground_truth = data[0]['truth_test']
-
-        valid_gt = get_valid_gt(ground_truth, sample)
-        dt = np.empty([len(valid_gt), 1602])
-        gt = np.empty([len(valid_gt), 2])
-
-        i = 0
-        for (peak_num, name, confidence) in valid_gt:
-            dt[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
-            if confidence == 2:
-                gt[i][0] = 0
-                gt[i][1] = 1
-            elif confidence == 1:
-                gt[i][0] = 1
-                gt[i][1] = 0
-            i = i + 1
-
-        x = dt[:i]
-        y = gt[:i]
-        if args['train']:
-            dnn.train(x, y, int(args['--e']))
+            dnn.train(g_x, g_y, int(args['--e']))
         elif args['test']:
             dnn.load()
-            dnn.evaluate(x, y)
-            prediction = dnn.predict(x)
+            dnn.evaluate(g_x, g_y)
+            prediction = dnn.predict(g_x)
             pred = translate_pred(prediction)
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'ml')
             rp.report_csv(sample_name, valid_gt, pred)
@@ -95,19 +99,24 @@ if __name__ == '__main__':
     elif args['algo']:
         import AlgoModel as am
         model = am.AlgoModel(int(args['--st']), int(args['--pt']))
-        pred = []
-        gt_conf = []
-        ground_truth = [*data[0]['truth_train'], *data[0]['truth_test']]
-        valid_gt = get_valid_gt(ground_truth, sample)
-        for (peak_num, name, confidence) in valid_gt:
-            conf, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample = model.predict(hits[name], sample[peak_num - 1])
-            pred.append(conf)
-            gt_conf.append(confidence)
-        pred = np.array(pred)
-        gt_conf = np.array(gt_conf)
-        right = pred == gt_conf
-        accuracy = np.sum(right) / right.size * 100
-        print("acc = {acc}%".format(acc=accuracy))
-        rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
-        rp.report_csv(sample_name, valid_gt, pred)
-        rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
+        for data in all_data:
+            sample_name = data['name']
+            hits = data['hits']
+            sample = data['sample']
+            ground_truth = data['ground_truth']
+            pred = []
+            gt_conf = []
+            ground_truth = data['ground_truth']
+            valid_gt = get_valid_gt(ground_truth, sample)
+            for (peak_num, name, confidence) in valid_gt:
+                conf, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample = model.predict(hits[name], sample[peak_num - 1])
+                pred.append(conf)
+                gt_conf.append(confidence)
+            pred = np.array(pred)
+            gt_conf = np.array(gt_conf)
+            right = pred == gt_conf
+            accuracy = np.sum(right) / right.size * 100
+            print("acc = {acc}%".format(acc=accuracy))
+            rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
+            rp.report_csv(sample_name, valid_gt, pred)
+            rp.report_pdf(sample_name, hits, sample, valid_gt, pred)

@@ -57,17 +57,7 @@ class DataParser:
     #   |             |__['name']
     #   |             |__['peaks']
     #   |             |__['spectrum']
-    #   ['truth_train']
-    #   |       |__[0]
-    #   |       |    |__(peak_num, name, confidence)
-    #   |       |__[1]
-    #   |       |    |__(peak_num, name, confidence)
-    #   |       .
-    #   |       .
-    #   |       .
-    #   |       |__[m]
-    #   |             |__(peak_num, name, confidence)
-    #   ['truth_test']
+    #   ['ground_truth']
     #           |__[0]
     #           |    |__(peak_num, name, confidence)
     #           |__[1]
@@ -78,14 +68,20 @@ class DataParser:
     #           |__[m]
     #                |__(peak_num, name, confidence)
 
-    def parseData(self):
+    def parseData(self, test_ml=False):
         dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
         for dir in dirs:
+            if test_ml is True:
+                if os.path.basename(dir) != 'test':
+                    continue
+            else:
+                if os.path.basename(dir) == 'test':
+                    continue
+            print(os.path.basename(dir))
             currPath = os.path.join(self.ROOT_DATA_DIR, dir)
             hitsPath = os.path.join(currPath, "hits")
             sampleFile = os.path.join(currPath, "peak_true.msp")
-            groundTruthTrainFile = os.path.join(currPath, "train.csv")
-            groundTruthTestFile = os.path.join(currPath, "test.csv")
+            groundTruthFile = os.path.join(currPath, "ground_truth.csv")
             hitsFiles = next(os.walk(hitsPath))[2]
             hits = {}
             for hitsFile in hitsFiles:
@@ -93,8 +89,7 @@ class DataParser:
                 name, mzdata = self.__parseHitsFile(path)
                 hits[name] = mzdata
             self.data.append({'name': os.path.basename(currPath),'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
-                              'truth_train': self.__parseGroundTruth(groundTruthTrainFile),
-                              'truth_test': self.__parseGroundTruth(groundTruthTestFile)})
+                              'ground_truth': self.__parseGroundTruth(groundTruthFile)})
             return self.data
 
     def __parseSampleFile(self, filename):
