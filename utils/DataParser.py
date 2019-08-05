@@ -89,7 +89,7 @@ class DataParser:
                 hits[name] = mzdata
             self.data.append({'name': os.path.basename(currPath),'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
                               'ground_truth': self.__parseGroundTruth(groundTruthFile)})
-            return self.data
+        return self.data
 
     def __parseSampleFile(self, filename):
         name_re = re.compile('NAME: (.*)')

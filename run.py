@@ -83,7 +83,7 @@ if __name__ == '__main__':
                 g_y = gt[:i]
             else:
                 g_x = np.concatenate((g_x, dt[:i]))
-                g_y = np.concatena
+                g_y = np.concatenate((g_y, gt[:i]))
         dnn = ml.DNNModel(args['-s'])
         if args['train']:
             dnn.train(g_x, g_y, int(args['--e']))
