@@ -40,10 +40,12 @@ def translate_pred(pred):
     pred[pred <= 0.5] = 0
     pred[pred > 0.5] = 1
     for p in pred:
-        if (p[0] == 1 and p[1] == 0):
-            ret.append(1)
-        elif (p[0] == 0 and p[1] == 1):
+        if (p[0] == 0 and p[1] == 0 and p[2] == 1):
             ret.append(2)
+        elif (p[0] == 0 and p[1] == 1 and p[2] == 0):
+            ret.append(1)
+        elif (p[0] == 1 and p[1] == 0 and p[2] == 0):
+            ret.append(0)
         else:
             ret.append(-1)
     return ret
@@ -66,15 +68,16 @@ if __name__ == '__main__':
                 valid_gt = get_valid_gt(ground_truth, sample)
                 for (peak_num, name, confidence) in valid_gt:
                     if confidence == 2:
-                        gt = [0, 1]
+                        gt = [0, 0, 1]
                     elif confidence == 1:
-                        gt = [1, 0]
-                    elif confident == 0:
-                        gt = [0, 0]
+                        gt = [0, 1, 0]
+                    elif confidence == 0:
+                        gt = [1, 0, 0]
                     X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
                     Y.append(gt)
             dnn = ml.DNNModel(args['-s'])
             dnn.train(np.array(X), np.array(Y), int(args['--e']))
+            dnn.save()
         elif args['test']:
             parser = dp.DataParser(args['-d'], dp.Mode.TEST)
             data = parser.parseData()
@@ -87,11 +90,11 @@ if __name__ == '__main__':
             Y = []
             for (peak_num, name, confidence) in valid_gt:
                 if confidence == 2:
-                    gt = [0, 1]
+                    gt = [0, 0, 1]
                 elif confidence == 1:
-                    gt = [1, 0]
-                elif confident == 0:
-                    gt = [0, 0]
+                    gt = [0, 1, 0]
+                elif confidence == 0:
+                    gt = [1, 0, 0]
                 X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
                 Y.append(gt)
             dnn = ml.DNNModel(args['-s'])

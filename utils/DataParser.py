@@ -10,7 +10,7 @@ class Mode(Enum):
     TEST = 2
     PREDICT = 3
 
-MAX_X = 801
+MAX_X = 1000
 class DataParser:
     def __init__(self, rootDataDir, mode=Mode.TRAIN):
         self.ROOT_DATA_DIR = rootDataDir
@@ -140,7 +140,7 @@ class DataParser:
                             if data:
                                 index = int(data[0])
                                 value = int(data[1])
-                                mz_data['spectrum'][index] = value
+                                mz_data['spectrum'][index - 1] = value
                     continue
         return ret
 
@@ -179,9 +179,9 @@ class DataParser:
                     if data:
                         index = int(data[0])
                         value = int(data[1])
-                        mz_data['spectrum'][index] = value
+                        mz_data['spectrum'][index - 1] = value
             return name, mz_data
 
     def __parseGroundTruth(self, filename):
-        arr = np.genfromtxt(filename, delimiter=';', dtype=None, encoding='ascii')
+        arr = np.genfromtxt(filename, delimiter=';', dtype="i8,|U128,i8", encoding='utf-8')
         return arr

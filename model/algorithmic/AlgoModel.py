@@ -31,7 +31,7 @@ class AlgoModel:
         if score >= self.SIMILARITY_THRESHOLD:
             sample_spectrum = sample['spectrum']
             hit_spectrum = hit['spectrum']
-            hit_spectrum[0:50] = 0
+            hit_spectrum[0:49] = 0
             top_three_ion_list_sample = self.__get_top_three(sample_spectrum)
             top_three_ion_list_hit = self.__get_top_three(hit_spectrum)
             hit_list = np.where(hit_spectrum >= 20)

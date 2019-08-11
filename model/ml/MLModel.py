@@ -10,8 +10,6 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
 
-MAX_X=801
-
 class DNNModel:
     def __init__(self, model_path, kernel_reg = 0.01, bias_reg = 0.01):
         self.model = None
@@ -24,11 +22,11 @@ class DNNModel:
         kreg = self.kernel_reg
         breg = self.bias_reg
         self.model.add(
-            Dense(1602, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), input_dim=1602, activation='sigmoid'))
-        self.model.add(Dense(801, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(400, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(100, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
+            Dense(500, input_dim=2000, activation='sigmoid'))
+        #self.model.add(Dense(1000, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+        #self.model.add(Dense(500, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+        self.model.add(Dense(100, activation='sigmoid'))
+        self.model.add(Dense(3, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
         self.model.compile(loss='categorical_crossentropy', optimizer='adam',
                            metrics=['accuracy'])
         self.model.summary()
