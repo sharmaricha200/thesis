@@ -25,6 +25,9 @@ class AlgoModel:
     def predict(self, hit, sample):
         score = hit['score']
         confidence = 0
+        percentage_lib_hit_present = 0
+        molecular_ion_hit = 0
+        top_three_ion_list_sample = []
         if score >= self.SIMILARITY_THRESHOLD:
             sample_spectrum = sample['spectrum']
             hit_spectrum = hit['spectrum']

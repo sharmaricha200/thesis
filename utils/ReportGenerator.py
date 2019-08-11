@@ -18,7 +18,7 @@ class ReportGenerator:
         f.write("#peak_num;name;original_confidence;predicted_confidence\n")
         i = 0
         for (peak_num, name, confidence) in test:
-            f.write("{peak_num};{name};{confidence};{pred}\n".format(peak_num=peak_num, name=name, confidence=confidence,
+            f.write("{peak_num};{name};{pred}\n".format(peak_num=peak_num, name=name,
                                                                  pred=pred[i]))
             i = i + 1
         print("Reports are generated under {file_path}".format(file_path=file_path))
@@ -50,6 +50,44 @@ class ReportGenerator:
             pdf.savefig(fig)
             plt.close()
             i = i + 1
+
+    def report_pdf1(self, sample_name, hits, sample, pred):
+        file_path = os.path.join(self.report_path, sample_name)
+        if not os.path.exists(file_path):
+            os.mkdir(file_path)
+        fig_path = os.path.join(file_path, "report.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
+        for (peak_num, name, confidence) in pred:
+            hit_spectrum = hits[name]['spectrum']
+            compound = sample[peak_num - 1]
+            sample_spectrum = compound['spectrum']
+            fig = plt.figure()
+            plt.plot(sample_spectrum)
+            plt.plot(-hit_spectrum)
+            plt.xlabel('m/z')
+            plt.ylabel('<---library/sample--->')
+            conf = "Low"
+            if (confidence == 1):
+                conf = "Medium"
+            elif (confidence == 2):
+                conf = "High"
+            title = str(peak_num) + ":" + compound['name'] + ", Confidence: " + conf
+            plt.title(title)
+            pdf.savefig(fig)
+            plt.close()
+
+    def report_csv1(self, sample_name, pred):
+        file_path = os.path.join(self.report_path, sample_name)
+        if not os.path.exists(file_path):
+            os.mkdir(file_path)
+        rep_file_path = os.path.join(file_path, "report.csv");
+        f = open(rep_file_path, "a+")
+        f.write("#peak_num;name;confidence\n")
+        for (peak_num, name, confidence) in pred:
+            f.write("{peak_num};{name};{pred}\n".format(peak_num=peak_num, name=name,
+                                                       pred=confidence))
+        print("Reports are generated under {file_path}".format(file_path=file_path))
+        f.close()
 
     #def plot(self, sample_name, peak_num, hit, sample):
     #    file_path = os.path.join(self.report_path, sample_name)

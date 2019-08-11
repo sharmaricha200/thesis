@@ -1,7 +1,7 @@
 """
 Usage:
-  run.py ml (train|test) -d=<data_dir> -s=<save_file_path> [--e=<epochs>]
-  run.py algo -d=<data_dir> [--st=<similarity_threshold>] [--pt=<percent_threshold>]
+  run.py ml (train|test|predict) -d=<data_dir> -s=<model_save_file_path> [--e=<epochs>]
+  run.py algo -d=<data_dir> (test|predict) [--st=<similarity_threshold>] [--pt=<percent_threshold>]
   run.py -h
 
 Options:
@@ -10,7 +10,7 @@ Options:
   --st=<similarity_threshold>   Similarity threshold [default: 600].
   --pt=<percent threshold>      Percent threshold [default: 80].
   --e=<epochs>                  Number of epochs [default: 30]
-  -s=<save_file_path>           File path where model is saved
+  -s=<model_save_file_path>     File path where model is saved
   --version                     Show version
 """
 
@@ -51,61 +51,94 @@ def translate_pred(pred):
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
-    parser = dp.DataParser(args['-d'])
-    all_data = parser.parseData(args['test'])
     if args['ml']:
         import MLModel as ml
-        g_x = np.array([])
-        g_y = np.array([])
-        for data in all_data:
+        if args['train']:
+            parser = dp.DataParser(args['-d'], dp.Mode.TRAIN)
+            all_data = parser.parseData()
+            X = []
+            Y = []
+            for data in all_data:
+                sample_name = data['name']
+                hits = data['hits']
+                sample = data['sample']
+                ground_truth = data['ground_truth']
+                valid_gt = get_valid_gt(ground_truth, sample)
+                for (peak_num, name, confidence) in valid_gt:
+                    if confidence == 2:
+                        gt = [0, 1]
+                    elif confidence == 1:
+                        gt = [1, 0]
+                    elif confident == 0:
+                        gt = [0, 0]
+                    X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
+                    Y.append(gt)
+            dnn = ml.DNNModel(args['-s'])
+            dnn.train(np.array(X), np.array(Y), int(args['--e']))
+        elif args['test']:
+            parser = dp.DataParser(args['-d'], dp.Mode.TEST)
+            data = parser.parseData()
             sample_name = data['name']
             hits = data['hits']
             sample = data['sample']
             ground_truth = data['ground_truth']
-
             valid_gt = get_valid_gt(ground_truth, sample)
-            dt = np.empty([len(valid_gt), 1602])
-            gt = np.empty([len(valid_gt), 2])
-
-            i = 0
+            X = []
+            Y = []
             for (peak_num, name, confidence) in valid_gt:
-                dt[i] = np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum']))
                 if confidence == 2:
-                    gt[i][0] = 0
-                    gt[i][1] = 1
+                    gt = [0, 1]
                 elif confidence == 1:
-                    gt[i][0] = 1
-                    gt[i][1] = 0
-                i = i + 1
-
-            if (g_x.size == 0):
-                g_x = dt[:i]
-                g_y = gt[:i]
-            else:
-                g_x = np.concatenate((g_x, dt[:i]))
-                g_y = np.concatenate((g_y, gt[:i]))
-        dnn = ml.DNNModel(args['-s'])
-        if args['train']:
-            dnn.train(g_x, g_y, int(args['--e']))
-        elif args['test']:
+                    gt = [1, 0]
+                elif confident == 0:
+                    gt = [0, 0]
+                X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
+                Y.append(gt)
+            dnn = ml.DNNModel(args['-s'])
             dnn.load()
-            dnn.evaluate(g_x, g_y)
-            prediction = dnn.predict(g_x)
+            dnn.evaluate(np.array(X), np.array(Y))
+            prediction = dnn.predict(np.array(X))
             pred = translate_pred(prediction)
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'ml')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
-
-    elif args['algo']:
-        import AlgoModel as am
-        model = am.AlgoModel(int(args['--st']), int(args['--pt']))
-        for data in all_data:
+        elif args['predict']:
+            parser = dp.DataParser(args['-d'], dp.Mode.PREDICT)
+            data = parser.parseData()
             sample_name = data['name']
             hits = data['hits']
             sample = data['sample']
-            ground_truth = data['ground_truth']
+            peak_num = 0
+            pred = []
+            X = []
+            for compound in sample:
+                peak_num = peak_num + 1
+                name = compound['name']
+                if name in hits:
+                    X.append(np.concatenate((compound['spectrum'], hits[name]['spectrum'])))
+                    pred.append((peak_num, name, 0))
+            dnn = ml.DNNModel(args['-s'])
+            dnn.load()
+            prediction = dnn.predict(np.array(X))
+            pred_arr = translate_pred(prediction)
+            i = 0
+            for Y in pred_arr:
+                pred[i] = (pred[i][0], pred[i][1], Y)
+                i = i + 1
+            rp = rg.ReportGenerator(ROOT_PATH + "/report", 'ml')
+            rp.report_csv1(sample_name, pred)
+            rp.report_pdf1(sample_name, hits, sample, pred)
+    elif args['algo']:
+        import AlgoModel as am
+        model = am.AlgoModel(int(args['--st']), int(args['--pt']))
+        if args['test']:
+            parser = dp.DataParser(args['-d'], dp.Mode.TEST)
+            data = parser.parseData()
             pred = []
             gt_conf = []
+            sample_name = data['name']
+            hits = data['hits']
+            sample = data['sample']
             ground_truth = data['ground_truth']
             valid_gt = get_valid_gt(ground_truth, sample)
             for (peak_num, name, confidence) in valid_gt:
@@ -120,3 +153,20 @@ if __name__ == '__main__':
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
+        elif args['predict']:
+            parser = dp.DataParser(args['-d'], dp.Mode.PREDICT)
+            data = parser.parseData()
+            peak_num = 0
+            pred = []
+            sample_name = data['name']
+            hits = data['hits']
+            sample = data['sample']
+            for compound in sample:
+                peak_num = peak_num + 1
+                name = compound['name']
+                if name in hits:
+                    conf, percentage_lib_hit_present, molecular_ion_hit, top_three_ion_list_sample = model.predict(hits[name], compound)
+                    pred.append((peak_num, name, conf))
+            rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
+            rp.report_csv1(sample_name, pred)
+            rp.report_pdf1(sample_name, hits, sample, pred)

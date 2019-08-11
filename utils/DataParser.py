@@ -3,12 +3,18 @@ import collections
 import numpy as np
 import os
 from os.path import isfile, join
+from enum import Enum
+
+class Mode(Enum):
+    TRAIN = 1
+    TEST = 2
+    PREDICT = 3
 
 MAX_X = 801
 class DataParser:
-    def __init__(self, rootDataDir):
-        self.data = []
+    def __init__(self, rootDataDir, mode=Mode.TRAIN):
         self.ROOT_DATA_DIR = rootDataDir
+        self.mode = mode
 
     #parses all the files in given rootDataDir into a datastructure.
     #the rootDataDir is assumed to have following file organization:
@@ -68,28 +74,32 @@ class DataParser:
     #           |__[m]
     #                |__(peak_num, name, confidence)
 
-    def parseData(self, test_ml=False):
-        dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
-        for dir in dirs:
-            if test_ml is True:
-                if os.path.basename(dir) != 'test':
-                    continue
-            else:
-                if os.path.basename(dir) == 'test':
-                    continue
-            currPath = os.path.join(self.ROOT_DATA_DIR, dir)
-            hitsPath = os.path.join(currPath, "hits")
-            sampleFile = os.path.join(currPath, "peak_true.msp")
-            groundTruthFile = os.path.join(currPath, "ground_truth.csv")
-            hitsFiles = next(os.walk(hitsPath))[2]
-            hits = {}
-            for hitsFile in hitsFiles:
-                path = os.path.join(hitsPath, hitsFile)
-                name, mzdata = self.__parseHitsFile(path)
-                hits[name] = mzdata
-            self.data.append({'name': os.path.basename(currPath),'hits': hits, 'sample':self.__parseSampleFile(sampleFile),
-                              'ground_truth': self.__parseGroundTruth(groundTruthFile)})
-        return self.data
+    def parseOneSample(self, currPath):
+        hitsPath = os.path.join(currPath, "hits")
+        sampleFile = os.path.join(currPath, "peak_true.msp")
+        groundTruthFile = os.path.join(currPath, "ground_truth.csv")
+        hitsFiles = next(os.walk(hitsPath))[2]
+        hits = {}
+        for hitsFile in hitsFiles:
+            path = os.path.join(hitsPath, hitsFile)
+            name, mzdata = self.__parseHitsFile(path)
+            hits[name] = mzdata
+        if self.mode == Mode.TRAIN or self.mode == Mode.TEST:
+            return {'name': os.path.basename(currPath), 'hits': hits, 'sample': self.__parseSampleFile(sampleFile),
+                    'ground_truth': self.__parseGroundTruth(groundTruthFile)}
+        else:
+            return {'name': os.path.basename(currPath), 'hits': hits, 'sample': self.__parseSampleFile(sampleFile)}
+
+    def parseData(self):
+        if self.mode == Mode.TRAIN:
+            data = []
+            dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
+            for dir_name in dirs:
+                curr_path = os.path.join(self.ROOT_DATA_DIR, dir_name)
+                data.append(self.parseOneSample(curr_path))
+            return data
+        elif self.mode == Mode.TEST or self.mode == Mode.PREDICT:
+            return self.parseOneSample(self.ROOT_DATA_DIR)
 
     def __parseSampleFile(self, filename):
         name_re = re.compile('NAME: (.*)')
