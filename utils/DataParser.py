@@ -77,7 +77,7 @@ class DataParser:
     def parseOneSample(self, currPath):
         hitsPath = os.path.join(currPath, "hits")
         sampleFile = os.path.join(currPath, "peak_true.msp")
-        groundTruthFile = os.path.join(currPath, "ground_truth.csv")
+        groundTruthFile = os.path.join(currPath, "ground_truth.tsv")
         hitsFiles = next(os.walk(hitsPath))[2]
         hits = {}
         for hitsFile in hitsFiles:
@@ -183,5 +183,5 @@ class DataParser:
             return name, mz_data
 
     def __parseGroundTruth(self, filename):
-        arr = np.genfromtxt(filename, delimiter=';', dtype="i8,|U128,i8", encoding='utf-8')
+        arr = np.genfromtxt(filename, delimiter='\t', dtype="i8,|U128,i8", encoding='utf-8')
         return arr
