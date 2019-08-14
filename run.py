@@ -50,6 +50,18 @@ def translate_pred(pred):
             ret.append(-1)
     return ret
 
+def get_stats(pred, gt, positive):
+    p = np.where(gt == positive)
+    c = pred[p]
+    tp = np.sum(c == positive)
+    fn = np.sum(c != positive)
+    p1 = np.where(pred == positive)
+    c1 = gt[p1]
+    fp = np.sum(c1 != positive)
+    tpr = tp * 100 / (tp + fn)
+    ppv = tp * 100 / (tp + fp)
+    return tpr, ppv
+
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
@@ -150,9 +162,15 @@ if __name__ == '__main__':
                 gt_conf.append(confidence)
             pred = np.array(pred)
             gt_conf = np.array(gt_conf)
-            right = pred == gt_conf
-            accuracy = np.sum(right) / right.size * 100
-            print("acc = {acc}%".format(acc=accuracy))
+            sensitivity, precision = get_stats(pred, gt_conf, 2)
+            print("For High confidence, Sensitivity: {sens}%, Precision: {prec}%".
+                  format(sens=sensitivity, prec=precision))
+            sensitivity, precision = get_stats(pred, gt_conf, 0)
+            print("For Low confidence, Sensitivity: {sens}%, Precision: {prec}%".
+                  format(sens=sensitivity, prec=precision))
+            sensitivity, precision = get_stats(pred, gt_conf, 1)
+            print("For Medium confidence, Sensitivity: {sens}%, Precision: {prec}%".
+                  format(sens=sensitivity, prec=precision))
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
