@@ -5,6 +5,8 @@ import matplotlib.backends.backend_pdf
 
 class ReportGenerator:
     def __init__(self, report_root, model_name):
+        if not os.path.exists(report_root):
+            os.mkdir(report_root)
         self.report_path = report_root + "/" + model_name
         if os.path.exists(self.report_path):
             shutil.rmtree(self.report_path)
