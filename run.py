@@ -85,7 +85,11 @@ if __name__ == '__main__':
                         gt = [0, 1, 0]
                     elif confidence == 0:
                         gt = [1, 0, 0]
-                    X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
+                    sample_spectrum = sample[peak_num - 1]['spectrum']
+                    sample_spectrum = sample_spectrum/np.linalg.norm(sample_spectrum)
+                    hit_spectrum = hits[name]['spectrum']
+                    hit_spectrum = hit_spectrum/np.linalg.norm(hit_spectrum)
+                    X.append(np.concatenate((sample_spectrum, hit_spectrum)))
                     Y.append(gt)
             dnn = ml.DNNModel(args['-s'])
             dnn.train(np.array(X), np.array(Y), int(args['--e']))
@@ -107,7 +111,11 @@ if __name__ == '__main__':
                     gt = [0, 1, 0]
                 elif confidence == 0:
                     gt = [1, 0, 0]
-                X.append(np.concatenate((sample[peak_num - 1]['spectrum'], hits[name]['spectrum'])))
+                sample_spectrum = sample[peak_num - 1]['spectrum']
+                sample_spectrum = sample_spectrum / np.linalg.norm(sample_spectrum)
+                hit_spectrum = hits[name]['spectrum']
+                hit_spectrum = hit_spectrum / np.linalg.norm(hit_spectrum)
+                X.append(np.concatenate((sample_spectrum, hit_spectrum)))
                 Y.append(gt)
             dnn = ml.DNNModel(args['-s'])
             dnn.load()
@@ -130,7 +138,11 @@ if __name__ == '__main__':
                 peak_num = peak_num + 1
                 name = compound['name']
                 if name in hits:
-                    X.append(np.concatenate((compound['spectrum'], hits[name]['spectrum'])))
+                    sample_spectrum = compound['spectrum']
+                    sample_spectrum = sample_spectrum / np.linalg.norm(sample_spectrum)
+                    hit_spectrum = hits[name]['spectrum']
+                    hit_spectrum = hit_spectrum / np.linalg.norm(hit_spectrum)
+                    X.append(np.concatenate((sample_spectrum, hit_spectrum)))
                     pred.append((peak_num, name, 0))
             dnn = ml.DNNModel(args['-s'])
             dnn.load()
