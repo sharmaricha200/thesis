@@ -15,12 +15,12 @@ class ReportGenerator:
         file_path = os.path.join(self.report_path, sample_name)
         if not os.path.exists(file_path):
             os.mkdir(file_path)
-        rep_file_path = os.path.join(file_path, "report.csv");
+        rep_file_path = os.path.join(file_path, "report.tsv");
         f = open(rep_file_path, "a+")
-        f.write("#peak_num;name;original_confidence;predicted_confidence\n")
+        f.write("#peak_num\tname\tconfidence\n")
         i = 0
         for (peak_num, name, confidence) in test:
-            f.write("{peak_num};{name};{pred}\n".format(peak_num=peak_num, name=name,
+            f.write("{peak_num}\t{name}\t{pred}\n".format(peak_num=peak_num, name=name,
                                                                  pred=pred[i]))
             i = i + 1
         print("Reports are generated under {file_path}".format(file_path=file_path))
@@ -82,28 +82,14 @@ class ReportGenerator:
         file_path = os.path.join(self.report_path, sample_name)
         if not os.path.exists(file_path):
             os.mkdir(file_path)
-        rep_file_path = os.path.join(file_path, "report.csv");
+        rep_file_path = os.path.join(file_path, "report.tsv");
         f = open(rep_file_path, "a+")
-        f.write("#peak_num;name;confidence\n")
+        f.write("#peak_num\tname\tconfidence\n")
         for (peak_num, name, confidence) in pred:
-            f.write("{peak_num};{name};{pred}\n".format(peak_num=peak_num, name=name,
+            f.write("{peak_num}\t{name}\t{pred}\n".format(peak_num=peak_num, name=name,
                                                        pred=confidence))
         print("Reports are generated under {file_path}".format(file_path=file_path))
         f.close()
-
-    #def plot(self, sample_name, peak_num, hit, sample):
-    #    file_path = os.path.join(self.report_path, sample_name)
-    #    if not os.path.exists(file_path):
-    #        os.mkdir(file_path)
-    #    plt.plot(sample['spectrum'])
-    #    plt.plot(-hit['spectrum'])
-    #    plt.xlabel('m/z')
-    #    plt.ylabel('<---library/sample--->')
-    #    plt.title(sample['name'])
-    #    fig_file = str(peak_num) + ".pdf"
-    #    fig_path = os.path.join(file_path, fig_file);
-    #    plt.savefig(fig_path)
-    #    plt.close()
 
     def __del__(self):
         pass
