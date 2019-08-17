@@ -2,6 +2,8 @@ import os
 import shutil
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
+import numpy as np
+import sys
 
 class ReportGenerator:
     def __init__(self, report_root, model_name):
@@ -34,12 +36,17 @@ class ReportGenerator:
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
         i = 0;
         for (peak_num, name, confidence) in valid_gt:
-            hit_spectrum = hits[name]['spectrum']
-            compound = sample[peak_num  - 1]
-            sample_spectrum = compound['spectrum']
+            compound = sample[peak_num - 1]
+            hit_last_index = np.nonzero(hits[name]['spectrum'])[0][-1]
+            sample_last_index = np.nonzero(compound['spectrum'])[0][-1]
+            max_index = max(hit_last_index, sample_last_index)
+            hit_spectrum = hits[name]['spectrum'][0:max_index]
+            sample_spectrum = compound['spectrum'][0:max_index]
             fig = plt.figure()
-            plt.plot(sample_spectrum)
-            plt.plot(-hit_spectrum)
+            t1,stemlines1,_t2 = plt.stem(sample_spectrum, markerfmt=" ")
+            plt.setp(stemlines1, linewidth=0.5, color='cornflowerblue')
+            t1, stemlines, _t2 = plt.stem(-hit_spectrum, markerfmt=" ")
+            plt.setp(stemlines, linewidth=0.5, color='coral')
             plt.xlabel('m/z')
             plt.ylabel('<---library/sample--->')
             conf = "Low"
@@ -47,11 +54,14 @@ class ReportGenerator:
                 conf = "Medium"
             elif (pred[i] == 2):
                 conf = "High"
-            title = str(peak_num) + ":" + compound['name'] + ", Confidence: " + conf
+            title = str(peak_num) + ":" + compound['name'] + ",\n Confidence: " + conf
             plt.title(title)
             pdf.savefig(fig)
             plt.close()
             i = i + 1
+            percent = i * 100/len(valid_gt)
+            print("\rReport progress: {:0.2f} %".format(percent), end='')
+            sys.stdout.flush()
 
     def report_pdf1(self, sample_name, hits, sample, pred):
         file_path = os.path.join(self.report_path, sample_name)
@@ -73,7 +83,7 @@ class ReportGenerator:
                 conf = "Medium"
             elif (confidence == 2):
                 conf = "High"
-            title = str(peak_num) + ":" + compound['name'] + ", Confidence: " + conf
+            title = str(peak_num) + ":" + compound['name'] + ",\n Confidence: " + conf
             plt.title(title)
             pdf.savefig(fig)
             plt.close()
