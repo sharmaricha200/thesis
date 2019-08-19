@@ -25,7 +25,7 @@ class DNNModel:
             Dense(1000, input_dim=2000, activation='sigmoid'))
         self.model.add(Dense(100, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
         self.model.add(Dense(10, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(3, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
+        self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
 
         self.model.compile(loss='categorical_crossentropy', optimizer='adam',
                            metrics=['accuracy'])

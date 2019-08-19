@@ -1,8 +1,8 @@
 """
 Usage:
-  run.py ml (train|test|predict) -d=<data_dir> -s=<model_save_file_path> [--e=<epochs>]
-  run.py algo -d=<data_dir> (test|predict) [--st=<similarity_threshold>] [--pt=<percent_threshold>]
-  run.py -h
+  CINeMA.py ml (train|test|predict) -d=<data_dir> -s=<model_save_file_path> [--e=<epochs>]
+  CINeMA.py algo -d=<data_dir> (test|predict) [--st=<similarity_threshold>] [--pt=<percent_threshold>]
+  CINeMA.py -h
 
 Options:
   -h --help                     Show this screen.
@@ -40,11 +40,9 @@ def translate_pred(pred):
     pred[pred <= 0.5] = 0
     pred[pred > 0.5] = 1
     for p in pred:
-        if (p[0] == 0 and p[1] == 0 and p[2] == 1):
+        if (p[0] == 0 and p[1] == 1):
             ret.append(2)
-        elif (p[0] == 0 and p[1] == 1 and p[2] == 0):
-            ret.append(1)
-        elif (p[0] == 1 and p[1] == 0 and p[2] == 0):
+        elif (p[0] == 1 and p[1] == 0):
             ret.append(0)
         else:
             ret.append(-1)
@@ -60,7 +58,8 @@ def get_stats(pred, gt, positive):
     fp = np.sum(c1 != positive)
     tpr = tp * 100 / (tp + fn)
     ppv = tp * 100 / (tp + fp)
-    return tpr, ppv
+    acc = np.sum(pred == gt) * 100/len(gt)
+    return tpr, ppv, acc
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -80,11 +79,9 @@ if __name__ == '__main__':
                 valid_gt = get_valid_gt(ground_truth, sample)
                 for (peak_num, name, confidence) in valid_gt:
                     if confidence == 2:
-                        gt = [0, 0, 1]
-                    elif confidence == 1:
-                        gt = [0, 1, 0]
+                        gt = [0, 1]
                     elif confidence == 0:
-                        gt = [1, 0, 0]
+                        gt = [1, 0]
                     sample_spectrum = sample[peak_num - 1]['spectrum']
                     sample_spectrum = sample_spectrum/np.linalg.norm(sample_spectrum)
                     hit_spectrum = hits[name]['spectrum']
@@ -106,11 +103,9 @@ if __name__ == '__main__':
             Y = []
             for (peak_num, name, confidence) in valid_gt:
                 if confidence == 2:
-                    gt = [0, 0, 1]
-                elif confidence == 1:
-                    gt = [0, 1, 0]
+                    gt = [0, 1]
                 elif confidence == 0:
-                    gt = [1, 0, 0]
+                    gt = [1, 0]
                 sample_spectrum = sample[peak_num - 1]['spectrum']
                 sample_spectrum = sample_spectrum / np.linalg.norm(sample_spectrum)
                 hit_spectrum = hits[name]['spectrum']
@@ -174,15 +169,13 @@ if __name__ == '__main__':
                 gt_conf.append(confidence)
             pred = np.array(pred)
             gt_conf = np.array(gt_conf)
-            sensitivity, precision = get_stats(pred, gt_conf, 2)
-            print("For High confidence, Sensitivity: {sens}%, Precision: {prec}%".
-                  format(sens=sensitivity, prec=precision))
-            sensitivity, precision = get_stats(pred, gt_conf, 0)
-            print("For Low confidence, Sensitivity: {sens}%, Precision: {prec}%".
-                  format(sens=sensitivity, prec=precision))
-            sensitivity, precision = get_stats(pred, gt_conf, 1)
-            print("For Medium confidence, Sensitivity: {sens}%, Precision: {prec}%".
-                  format(sens=sensitivity, prec=precision))
+            sensitivity, precision, acc = get_stats(pred, gt_conf, 2)
+            print("acc: {:0.2f} %".format(acc))
+            print("For High confidence, Sensitivity: {:.02f} %, Precision: {:.02f} %".
+                  format(sensitivity, precision))
+            sensitivity, precision, acc = get_stats(pred, gt_conf, 0)
+            print("For Low confidence, Sensitivity: {:.02f} %, Precision: {:.02f} %".
+                  format(sensitivity, precision))
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
