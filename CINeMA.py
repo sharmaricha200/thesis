@@ -49,17 +49,8 @@ def translate_pred(pred):
     return ret
 
 def get_stats(pred, gt, positive):
-    p = np.where(gt == positive)
-    c = pred[p]
-    tp = np.sum(c == positive)
-    fn = np.sum(c != positive)
-    p1 = np.where(pred == positive)
-    c1 = gt[p1]
-    fp = np.sum(c1 != positive)
-    tpr = tp * 100 / (tp + fn)
-    ppv = tp * 100 / (tp + fp)
     acc = np.sum(pred == gt) * 100/len(gt)
-    return tpr, ppv, acc
+    return acc
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
@@ -169,13 +160,8 @@ if __name__ == '__main__':
                 gt_conf.append(confidence)
             pred = np.array(pred)
             gt_conf = np.array(gt_conf)
-            sensitivity, precision, acc = get_stats(pred, gt_conf, 2)
+            acc = get_stats(pred, gt_conf, 2)
             print("acc: {:0.2f} %".format(acc))
-            print("For High confidence, Sensitivity: {:.02f} %, Precision: {:.02f} %".
-                  format(sensitivity, precision))
-            sensitivity, precision, acc = get_stats(pred, gt_conf, 0)
-            print("For Low confidence, Sensitivity: {:.02f} %, Precision: {:.02f} %".
-                  format(sensitivity, precision))
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
