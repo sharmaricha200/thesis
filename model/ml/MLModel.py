@@ -30,7 +30,6 @@ class DNNModel:
         self.model.compile(loss='categorical_crossentropy', optimizer='adam',
                            metrics=['accuracy'])
         self.model.summary()
-        plot_model(self.model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
         history = self.model.fit(x_train, y_train, epochs=rep)
 
         fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
