@@ -51,6 +51,7 @@ class DNNModel:
         plt.legend(['Train', 'Test'], loc='upper left')
         pdf.savefig(fig)
         plt.close()
+        pdf.close()
 
     def save(self):
         self.model.save(self.model_path)
