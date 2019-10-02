@@ -62,6 +62,7 @@ class ReportGenerator:
             percent = i * 100/len(valid_gt)
             print("\rReport progress: {:0.2f} %".format(percent), end='')
             sys.stdout.flush()
+        pdf.close()
 
     def report_pdf1(self, sample_name, hits, sample, pred):
         file_path = os.path.join(self.report_path, sample_name)
@@ -87,6 +88,7 @@ class ReportGenerator:
             plt.title(title)
             pdf.savefig(fig)
             plt.close()
+        pdf.close()
 
     def report_csv1(self, sample_name, pred):
         file_path = os.path.join(self.report_path, sample_name)
