@@ -13,10 +13,6 @@ class ReportGenerator:
         if os.path.exists(self.report_path):
             shutil.rmtree(self.report_path)
         os.mkdir(self.report_path)
-        self.image_path = self.report_path + '/' + 'plots' #Added
-        if os.path.exists(self.image_path):        #Added
-            shutil.rmtree(self.image_path)          #Added
-        os.mkdir(self.image_path)                  #Added
     def report_csv(self, sample_name, test, pred):
         file_path = os.path.join(self.report_path, sample_name)
         if not os.path.exists(file_path):
@@ -59,16 +55,14 @@ class ReportGenerator:
             elif (pred[i] == 2):
                 conf = "High"
             title = str(peak_num) + ":" + compound['name'] + ",\n Confidence: " + conf
-            file_name = str(peak_num) + '.png'  # Added
             plt.title(title)
-            #pdf.savefig(fig) Removed
-            plt.savefig(os.path.join(self.image_path, file_name)) #Added
+            pdf.savefig(fig)
             plt.close()
             i = i + 1
             percent = i * 100/len(valid_gt)
             print("\rReport progress: {:0.2f} %".format(percent), end='')
             sys.stdout.flush()
-
+        pdf.close()
 
     def report_pdf1(self, sample_name, hits, sample, pred):
         file_path = os.path.join(self.report_path, sample_name)
@@ -76,7 +70,6 @@ class ReportGenerator:
             os.mkdir(file_path)
         fig_path = os.path.join(file_path, "report.pdf")
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
-        i = 0
         for (peak_num, name, confidence) in pred:
             hit_spectrum = hits[name]['spectrum']
             compound = sample[peak_num - 1]
@@ -92,12 +85,10 @@ class ReportGenerator:
             elif (confidence == 2):
                 conf = "High"
             title = str(peak_num) + ":" + compound['name'] + ",\n Confidence: " + conf
-            file_name = str(peak_num) + '.png' #Added
             plt.title(title)
-            #pdf.savefig(fig) Removed
-            plt.savefig(os.path.join(self.image_path, file_name)) #Added
+            pdf.savefig(fig)
             plt.close()
-
+        pdf.close()
 
     def report_csv1(self, sample_name, pred):
         file_path = os.path.join(self.report_path, sample_name)
