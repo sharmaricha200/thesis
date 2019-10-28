@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.regularizers import l2
@@ -9,6 +10,7 @@ from keras.models import load_model
 import os
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
+from distutils.version import StrictVersion
 
 class DNNModel:
     def __init__(self, model_path, kernel_reg = 0.003, bias_reg = 0.003):
@@ -35,7 +37,10 @@ class DNNModel:
         fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
         fig = plt.figure()
-        plt.plot(history.history['acc'])
+        if StrictVersion(keras.__version__) > StrictVersion('2.2.5'):
+            plt.plot(history.history['accuracy'])
+        else:
+            plt.plot(history.history['acc'])
         plt.title('Model accuracy')
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
