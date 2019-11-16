@@ -1,16 +1,17 @@
 """
 Usage:
-  CINeMA.py ml (train|test|predict) -d=<data_dir> -s=<model_save_file_path> [--e=<epochs>]
-  CINeMA.py algo -d=<data_dir> (test|predict) [--st=<similarity_threshold>] [--pt=<percent_threshold>]
+  CINeMA.py ml (train|test|predict) -d <data_dir> -s <model_save_file_path> [--e <epochs>]
+  CINeMA.py algo -d <data_dir> (test|predict) [--st <similarity_threshold>] [--pt <percent_threshold>]
+  CINeMA.py scatter -d <path_to_csv>
   CINeMA.py -h
 
 Options:
   -h --help                     Show this screen.
-  -d=<data_dir>                 Data directory path.
-  --st=<similarity_threshold>   Similarity threshold [default: 600].
-  --pt=<percent threshold>      Percent threshold [default: 80].
-  --e=<epochs>                  Number of epochs [default: 30]
-  -s=<model_save_file_path>     File path where model is saved
+  -d <data_dir>                 Data directory path.
+  --st <similarity_threshold>   Similarity threshold [default: 600].
+  --pt <percent threshold>      Percent threshold [default: 80].
+  --e <epochs>                  Number of epochs [default: 30]
+  -s <model_save_file_path>     File path where model is saved
   --version                     Show version
 """
 
@@ -26,6 +27,7 @@ sys.path.insert(0, ROOT_PATH + "/utils")
 
 import DataParser as dp
 import ReportGenerator as rg
+import MWvsRT as wr
 import numpy as np
 
 def get_valid_gt(in_gt, sample):
@@ -182,3 +184,5 @@ if __name__ == '__main__':
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv1(sample_name, pred)
             rp.report_pdf1(sample_name, hits, sample, pred)
+    elif args['scatter']:
+        parser = wr.scatter(ROOT_PATH + '/CINeMA.py', args['-d'])
