@@ -22,7 +22,7 @@ This repository contains software that can be used to automate the manual review
 
 ## Data Directory Structure
 
-	*Note: See the data folder provided for an example of how the directories should be formatted.*
+*Note: See the data folder provided for an example of how the directories should be formatted.*
 
 * When making predictions with either model, the sample directory needs to contain the list of suggested analytes named “peak_true.msp” and a subdirectory named “hits”. This subdirectory should contain the library hit files in msp format. These files must be named 1.msp, 2.msp, 3.msp, and so on.
 
