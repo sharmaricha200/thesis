@@ -34,9 +34,9 @@ This repository contains software that can be used to automate the manual review
 
 	CINeMA.py -h 
 
-	CINeMA.py ml (train|test|predict) -d <data directory path> -s <path to model> [--e 		<number of epochs>]
+	CINeMA.py ml (train|test|predict) -d <data directory path> -s <path to model> [--e <number of epochs>]
 
-	CINeMA.py algo -d <data directory path> (test|predict) [--st (similarity threshold)] 	[--pt <percent threshold>]
+	CINeMA.py algo -d <data directory path> (test|predict) [--st (similarity threshold)] [--pt <percent threshold>]
 
 	CINeMA.py scatter -d <path to csv>
 
@@ -49,7 +49,7 @@ This repository contains software that can be used to automate the manual review
 		Uses an algorithmic model to classify mass spectra
 
 	scatter
-		Generates plots of compound molecular weight to retention times 1 and 2. The CSV must contain column headers labeled “1st 			Retention Time” and “2nd Retention Time” (Default if done through ChromaTOF”
+		Generates plots of compound molecular weight to retention times 1 and 2. The CSV must contain column headers labeled “1st Retention Time” and “2nd Retention Time” (Default if done through ChromaTOF”
 
 	train				    
 		Train a new machine learning model with new data
