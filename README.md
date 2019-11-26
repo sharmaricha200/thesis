@@ -49,7 +49,7 @@ This repository contains software that can be used to automate the manual review
 		Uses an algorithmic model to classify mass spectra
 
 	scatter
-		Generates plots of compound molecular weight to retention times 1 and 2. The CSV must contain column headers labeled “1st Retention Time” and “2nd Retention Time” (Default if done through ChromaTOF”
+		Generates plots of compound molecular weight to retention times 1 and 2. The CSV must contain column headers labeled “1st Retention Time,” “2nd Retention Time,” and 'Molecular Weight" (Default if done through ChromaTOF)
 
 	train				    
 		Train a new machine learning model with new data
@@ -80,7 +80,7 @@ This repository contains software that can be used to automate the manual review
 
 *Note: “python” represents the path to your python installation.*
 
-* From command line make the directory where CINeMA.py is located your working directory, then use the following commands.
+* From command line make the directory where CINeMA.py is located your working directory, then use the following commands:
  
 		python CINeMA.py ml predict -d data/algo/sample2 -s model.h5
 
