@@ -1,3 +1,4 @@
+import seaborn as sns
 import pandas as pd
 import numpy as np
 import keras
@@ -7,6 +8,10 @@ from keras.regularizers import l2
 from keras.utils import np_utils
 from keras.utils.vis_utils import plot_model
 from keras.models import load_model
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_auc_score
 import os
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -56,6 +61,7 @@ class DNNModel:
         plt.legend(['Train', 'Test'], loc='upper left')
         pdf.savefig(fig)
         plt.close()
+
         pdf.close()
 
     def save(self):
@@ -69,5 +75,33 @@ class DNNModel:
         return self.model.predict(x_test)
 
     def evaluate(self, x_test, y_test):
+        classes = ['Low', 'High']
+        predictions = self.model.predict(x_test)
+        fig_path = os.path.join(os.path.dirname(self.model_path), "measures.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
+        fig = plt.figure()
+
+        matrix = confusion_matrix(y_test.argmax(axis = 1), predictions.argmax(axis = 1))
+        sns.heatmap(matrix, annot = True, cbar = True, xticklabels = classes, yticklabels = classes, cmap = 'Blues')
+        plt.ylabel('True Match Quality')
+        plt.xlabel('Predicted Match Quality')
+        pdf.savefig(fig)
+        plt.close()
+
+        probabilities = self.model.predict_proba(x_test)
+        probabilities = probabilities[:, 1]
+        area = roc_auc_score(y_test.argmax(axis = 1), probabilities)
+        fp, tp, _ = roc_curve(y_test.argmax(axis = 1), probabilities)
+        fig = plt.figure()
+        plt.plot(fp, tp, marker = '.', label = 'ROC (area = {:.3f})'.format(area))
+        plt.plot([0,1], [0,1], 'k--')
+        plt.xlabel('False positive rate')
+        plt.ylabel('True positive rate')
+        plt.legend(loc = 'best')
+        pdf.savefig(fig)
+        plt.close()
+
+        pdf.close()
+
         score = self.model.evaluate(x_test, y_test)
         print("%s: %.2f%%" % (self.model.metrics_names[1], score[1]*100))
