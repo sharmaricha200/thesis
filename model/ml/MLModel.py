@@ -1,17 +1,14 @@
 import seaborn as sns
-import pandas as pd
 import numpy as np
 import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.regularizers import l2
-from keras.utils import np_utils
-from keras.utils.vis_utils import plot_model
 from keras.models import load_model
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
 from sklearn.metrics import roc_curve
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 import os
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -24,20 +21,26 @@ class DNNModel:
         self.kernel_reg = kernel_reg
         self.bias_reg = bias_reg
 
-    def train(self, x_train, y_train, rep):
-        self.model = Sequential()
-        kreg = self.kernel_reg
-        breg = self.bias_reg
-        self.model.add(
-            Dense(1000, input_dim=2000, activation='sigmoid'))
-        self.model.add(Dense(100, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(10, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
-        self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
-
-        self.model.compile(loss='categorical_crossentropy', optimizer='adam',
-                           metrics=['accuracy'])
-        self.model.summary()
-        history = self.model.fit(x_train, y_train, epochs=rep)
+    def train(self, x, y, rep):
+        seed = 7
+        np.random.seed(seed)
+        kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = seed)
+        all_scores = []
+        for train, test in kfold.split(x, y.argmax(axis = 1)):
+            self.model = Sequential()
+            kreg = self.kernel_reg
+            breg = self.bias_reg
+            self.model.add(Dense(1000, input_dim=2000, activation='sigmoid'))
+            self.model.add(Dense(100, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+            self.model.add(Dense(10, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+            self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
+            self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+            self.model.summary()
+            history = self.model.fit(x[train], y[train], epochs = rep, batch_size = 10, verbose = 0)
+            scores = self.model.evaluate(x[test], y[test], verbose = 0)
+            print("%s: %.2f%%" % (self.model.metrics_names[1], scores[1] * 100))
+            all_scores.append(scores[1] * 100)
+        print('%.2f%% (+/- %.2f%%)' % (np.mean(all_scores), np.std(all_scores)))
 
         fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
