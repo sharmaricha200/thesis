@@ -54,6 +54,14 @@ def get_stats(pred, gt, positive):
     acc = np.sum(pred == gt) * 100/len(gt)
     return acc
 
+def get_matrix(pred, gt):
+    TP = np.sum(np.logical_and(pred == 2, gt == 2))
+    TN = np.sum(np.logical_and(pred == 0, gt == 0))
+    FP = np.sum(np.logical_and(pred == 2, gt == 0))
+    FN = np.sum(np.logical_and(pred == 0, gt == 2))
+    confusion_matrix = np.matrix([[TN, FP], [FN, TP]])
+    return confusion_matrix
+
 if __name__ == '__main__':
     args = docopt(__doc__, version='1.0')
     #print(args)
@@ -163,10 +171,12 @@ if __name__ == '__main__':
             pred = np.array(pred)
             gt_conf = np.array(gt_conf)
             acc = get_stats(pred, gt_conf, 2)
+            matrix = get_matrix(pred, gt_conf)
             print("acc: {:0.2f} %".format(acc))
             rp = rg.ReportGenerator(ROOT_PATH + "/report", 'algo')
             rp.report_csv(sample_name, valid_gt, pred)
             rp.report_pdf(sample_name, hits, sample, valid_gt, pred)
+            rp.report_matrix(sample_name, matrix)
         elif args['predict']:
             parser = dp.DataParser(args['-d'], dp.Mode.PREDICT)
             data = parser.parseData()
