@@ -26,6 +26,8 @@ class DNNModel:
         np.random.seed(seed)
         kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = seed)
         all_scores = []
+        fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
         for train, test in kfold.split(x, y.argmax(axis = 1)):
             self.model = Sequential()
             kreg = self.kernel_reg
@@ -36,36 +38,38 @@ class DNNModel:
             self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
             self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
             self.model.summary()
-            history = self.model.fit(x[train], y[train], epochs = rep, batch_size = 10, verbose = 0)
+            history = self.model.fit(x[train], y[train], epochs = rep, batch_size = 10, verbose = 0, validation_data=(x[test], y[test]))
             scores = self.model.evaluate(x[test], y[test], verbose = 0)
             print("%s: %.2f%%" % (self.model.metrics_names[1], scores[1] * 100))
             all_scores.append(scores[1] * 100)
-        print('%.2f%% (+/- %.2f%%)' % (np.mean(all_scores), np.std(all_scores)))
 
-        fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
-        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
-        fig = plt.figure()
-        if StrictVersion(keras.__version__) > StrictVersion('2.2.5'):
-            plt.plot(history.history['accuracy'])
-        else:
-            plt.plot(history.history['acc'])
-        plt.title('Model accuracy')
-        plt.ylabel('Accuracy')
-        plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
-        pdf.savefig(fig)
-        plt.close()
+            fig = plt.figure()
+            if StrictVersion(keras.__version__) > StrictVersion('2.2.5'):
+                plt.plot(history.history['accuracy'])
+                plt.plot(history.history['val_accuracy'])
+            else:
+                plt.plot(history.history['acc'])
+                plt.plot(history.history['val_accuracy'])
+            plt.title('Model accuracy')
+            plt.ylabel('Accuracy')
+            plt.xlabel('Epoch')
+            plt.legend(['Train', 'Validation'], loc='upper left')
+            pdf.savefig(fig)
+            plt.close()
 
-        fig = plt.figure()
-        plt.plot(history.history['loss'])
-        plt.title('Model loss')
-        plt.ylabel('Loss')
-        plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
-        pdf.savefig(fig)
-        plt.close()
+            fig = plt.figure()
+            plt.plot(history.history['loss'])
+            plt.plot(history.history['val_loss'])
+            plt.title('Model loss')
+            plt.ylabel('Loss')
+            plt.xlabel('Epoch')
+            plt.legend(['Train', 'Validation'], loc='upper left')
+            pdf.savefig(fig)
+            plt.close()
 
         pdf.close()
+
+        print('%.2f%% (+/- %.2f%%)' % (np.mean(all_scores), np.std(all_scores)))
 
     def save(self):
         self.model.save(self.model_path)
@@ -85,7 +89,7 @@ class DNNModel:
         fig = plt.figure()
 
         matrix = confusion_matrix(y_test.argmax(axis = 1), predictions.argmax(axis = 1))
-        sns.heatmap(matrix, annot = True, cbar = True, xticklabels = classes, yticklabels = classes, cmap = 'Blues')
+        sns.heatmap(matrix, annot = True, cbar = True, xticklabels = classes, yticklabels = classes, cmap = 'Blues', fmt = 'g')
         plt.ylabel('True Match Quality')
         plt.xlabel('Predicted Match Quality')
         pdf.savefig(fig)
