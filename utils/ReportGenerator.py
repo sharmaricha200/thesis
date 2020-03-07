@@ -1,4 +1,5 @@
 import os
+import seaborn as sns
 import shutil
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -112,6 +113,21 @@ class ReportGenerator:
                                                        pred=confidence))
         print("Reports are generated under {file_path}".format(file_path=file_path))
         f.close()
+
+    def report_matrix(self, sample_name, matrix):
+        classes = ['Low', 'High']
+        file_path = os.path.join(self.report_path, sample_name)
+        if not os.path.exists(file_path):
+            os.mkdir(file_path)
+        fig_path = os.path.join(file_path, 'matrix.pdf')
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
+        fig = plt.figure()
+        sns.heatmap(matrix, annot=True, cbar=True, xticklabels=classes, yticklabels=classes, cmap='Blues', fmt = 'g')
+        plt.ylabel('True Match Quality')
+        plt.xlabel('Predicted Match Quality')
+        pdf.savefig(fig)
+        plt.close()
+        pdf.close()
 
     def __del__(self):
         pass
