@@ -5,10 +5,12 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.regularizers import l2
 from keras.models import load_model
+from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_curve
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import GridSearchCV
 import os
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
@@ -28,7 +30,7 @@ class DNNModel:
         all_scores = []
         fig_path = os.path.join(os.path.dirname(self.model_path), "model_performance.pdf")
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_path)
-        for train, test in kfold.split(x, y.argmax(axis = 1)):
+        for train, val in kfold.split(x, y.argmax(axis = 1)):
             self.model = Sequential()
             kreg = self.kernel_reg
             breg = self.bias_reg
@@ -38,8 +40,8 @@ class DNNModel:
             self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
             self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
             self.model.summary()
-            history = self.model.fit(x[train], y[train], epochs = rep, batch_size = 64, verbose = 0, validation_data=(x[test], y[test]))
-            scores = self.model.evaluate(x[test], y[test], verbose = 0)
+            history = self.model.fit(x[train], y[train], epochs = rep, batch_size = 64, verbose = 0, validation_data=(x[val], y[val]))
+            scores = self.model.evaluate(x[val], y[val], verbose = 0)
             print("%s: %.2f%%" % (self.model.metrics_names[1], scores[1] * 100))
             all_scores.append(scores[1] * 100)
 
@@ -70,6 +72,33 @@ class DNNModel:
         pdf.close()
 
         print('%.2f%% (+/- %.2f%%)' % (np.mean(all_scores), np.std(all_scores)))
+
+    # def create_initial_model(self):
+    #     self.model = Sequential()
+    #     kreg = self.kernel_reg
+    #     breg = self.bias_reg
+    #     self.model.add(Dense(1000, input_dim=2000, activation='sigmoid'))
+    #     self.model.add(Dense(100, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+    #     self.model.add(Dense(10, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='sigmoid'))
+    #     self.model.add(Dense(2, kernel_regularizer=l2(kreg), bias_regularizer=l2(breg), activation='softmax'))
+    #     self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    #     return self.model
+    #
+    # def grid(self, x, y):
+    #     seed = 7
+    #     np.random.seed(seed)
+    #     model = KerasClassifier(build_fn = self.create_initial_model, verbose = 0)
+    #     batch_size = [64]
+    #     epochs = [30]
+    #     param_grid = dict(batch_size = batch_size, epochs = epochs)
+    #     grid = GridSearchCV(estimator = model, param_grid = param_grid, n_jobs = -1, cv = 10)
+    #     grid_result = grid.fit(x, y)
+    #     print('Best: %f using %s' % (grid_result.best_score_, grid_result.best_params_))
+    #     means = grid_result.cv_results_['mean_test_score']
+    #     stds = grid_result.cv_results_['std_test_score']
+    #     params = grid_result.cv_results_['params']
+    #     for mean, stdev, param in zip(means, stds, params):
+    #         print("%f (%f) with: %r" % (mean, stdev, param))
 
     def save(self):
         self.model.save(self.model_path)
