@@ -41,6 +41,7 @@ def translate_pred(pred):
     ret  = []
     pred[pred <= 0.5] = 0
     pred[pred > 0.5] = 1
+
     for p in pred:
         if (p[0] == 0 and p[1] == 1):
             ret.append(2)
@@ -91,6 +92,7 @@ if __name__ == '__main__':
                     Y.append(gt)
             dnn = ml.DNNModel(args['-s'])
             dnn.train(np.array(X), np.array(Y), int(args['--e']))
+            #dnn.grid(np.array(X), np.array(Y))
             dnn.save()
         elif args['test']:
             parser = dp.DataParser(args['-d'], dp.Mode.TEST)
