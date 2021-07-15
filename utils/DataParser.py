@@ -78,6 +78,7 @@ class DataParser:
         hitsPath = os.path.join(currPath, "hits")
         sampleFile = os.path.join(currPath, "peak_true.msp")
         groundTruthFile = os.path.join(currPath, "ground_truth.tsv")
+        compoundsFile = os.path.join(currPath, "compounds.tsv")
         hitsFiles = next(os.walk(hitsPath))[2]
         hits = {}
         for hitsFile in hitsFiles:
@@ -88,18 +89,19 @@ class DataParser:
             return {'name': os.path.basename(currPath), 'hits': hits, 'sample': self.__parseSampleFile(sampleFile),
                     'ground_truth': self.__parseGroundTruth(groundTruthFile)}
         else:
-            return {'name': os.path.basename(currPath), 'hits': hits, 'sample': self.__parseSampleFile(sampleFile)}
+            return {'name': os.path.basename(currPath), 'hits': hits, 'sample': self.__parseSampleFile(sampleFile),
+                    'compounds': self._parseCompounds(compoundsFile)}
 
     def parseData(self):
-        if self.mode == Mode.TRAIN:
-            data = []
-            dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
-            for dir_name in dirs:
-                curr_path = os.path.join(self.ROOT_DATA_DIR, dir_name)
-                data.append(self.parseOneSample(curr_path))
-            return data
-        elif self.mode == Mode.TEST or self.mode == Mode.PREDICT:
-            return self.parseOneSample(self.ROOT_DATA_DIR)
+        #if self.mode == Mode.TRAIN:
+        data = []
+        dirs = next(os.walk(self.ROOT_DATA_DIR))[1]
+        for dir_name in dirs:
+            curr_path = os.path.join(self.ROOT_DATA_DIR, dir_name)
+            data.append(self.parseOneSample(curr_path))
+        return data
+        # elif self.mode == Mode.TEST or self.mode == Mode.PREDICT:
+        #     return self.parseOneSample(self.ROOT_DATA_DIR)
 
     def __parseSampleFile(self, filename):
         name_re = re.compile('NAME: (.*)')
@@ -183,5 +185,9 @@ class DataParser:
             return name, mz_data
 
     def __parseGroundTruth(self, filename):
-        arr = np.genfromtxt(filename, delimiter='\t', dtype="i8,|U128,i8", encoding='utf-8')
+        arr = np.genfromtxt(filename, delimiter='\t', dtype="i8,|U128,i8,i8", encoding='utf-8')
+        return arr
+
+    def _parseCompounds(self, filename):
+        arr = np.genfromtxt(filename, delimiter='\t', dtype = "i8,|U128,i8", encoding='utf-8')
         return arr
