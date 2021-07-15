@@ -86,7 +86,7 @@ This repository contains software that can be used to automate the manual review
 		Splits a specified Data Directory for a train test split
 
 	--grid
-		Perform a Grid Search
+		Perform a Grid Search (Only works with the train argument)
                            
 	--version                                                  
 		Show the version number
