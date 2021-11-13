@@ -1,0 +1,98 @@
+﻿Peak Number,Name,Molecular Weight,Similarity Score,1st RT,2nd RT,Area
+241,"Pyridine, 2-methyl-",93,880,633.912,1.531,27230
+392,"2-Cyclopenten-1-one, 2-methyl-",96,920,829.8,1.921,31250
+417,"Pyrazine, ethyl-",108,853,854.286,1.789,47318
+430,"Pyrazine, 2,3-dimethyl-",108,797,868.278,1.802,69981
+471,"2-Cyclopenten-1-one, 3,4-dimethyl-",110,874,917.25,1.828,29638
+482,"2(5H)-Furanone, 5-methyl-",98,856,927.744,2.33,23971
+493,"Imidazole, 5-hydrazinocarbonyl-",126,725,941.736,1.828,26389
+509,"Cyclohexanone, 3-methyl-, (R)-",112,925,955.728,1.835,37226
+558,Dimethyl trisulfide,126,809,1015.19,1.993,9178.3
+604,Cyclobutanemethanol,86,800,1067.66,1.624,16809
+625,"4,4-Dimethyl-2-cyclopenten-1-one",110,893,1085.15,1.967,79328
+646,"2-Methyliminoperhydro-1,3-oxazine",114,853,1102.64,2.204,60590
+654,"4-Hexen-2-one, 3-methyl-",112,874,1109.64,2.198,62978
+681,"2(5H)-Furanone, 3,5,5-trimethyl-",126,857,1137.62,2.02,29018
+697,"1,7-Nonadien-4-ol, 4,8-dimethyl-",168,554,1148.12,2.02,10083
+706,"Ethane, diazo-",56,999,1155.11,2.99,97984
+732,"2-Cyclopenten-1-one, 3,4-dimethyl-",110,770,1172.6,2.039,48019
+771,"Butanoic acid, 4-hydroxy-2-methylene-",116,834,1218.08,1.993,30485
+772,"2H-Pyran-2-one, 5,6-dihydro-",98,903,1218.08,2.105,24714
+813,"2-Octenal, (E)-",126,697,1274.05,1.637,8910.1
+835,"2-Cyclopenten-1-one, 2,3,4-trimethyl-",124,792,1291.54,1.907,46057
+922,"2-ethoxy-3,5-hexadiene",126,762,1368.49,2.152,30626
+923,4-Pyridinol-1-oxide,111,675,1368.49,2.31,5884.8
+932,"3,5-Heptadien-2-one, 6-methyl-, (E)-",124,814,1375.49,1.973,26967
+952,"4-Hepten-3-one, 4-methyl-",126,889,1392.98,2.165,56507
+960,"2(5H)-Furanone, 3,5,5-trimethyl-",126,757,1406.97,2.264,19652
+970,"2-Cyclohexen-1-one, 3,5-dimethyl-",124,899,1417.46,2.013,27325
+993,4-Acetyl-1-methylcyclohexene,138,593,1438.45,1.69,17127
+1000,"2,3-Dimethyl-4-hydroxy-2-butenoic lactone",112,928,1445.45,2.468,18384
+1017,"2,4,4,6,6,8,8-Heptamethyl-1-nonene",224,736,1462.94,2.02,18036
+1022,"4,6-Dimethyl-3,5-dioxo-2,3,4,5-tetrahydro-1,2,4-triazine",141,815,1466.44,2.171,55871
+1077,"2-Hepten-4-one, 2-methyl-",126,815,1536.4,2.29,103108
+1091,"Phenol, 2,4-dimethyl-",122,860,1553.89,1.947,48553
+1114,Allyl nonanoate,198,631,1578.37,1.888,2177.3
+1119,"5-Hepten-2-one, 5,6-dimethyl-",140,762,1585.37,1.835,31044
+1120,"Bicyclo[3.1.1]heptan-3-one, 2,6,6-trimethyl-",152,838,1585.37,1.861,64505
+1152,"4-Hepten-3-one, 4-methyl-",126,908,1606.36,2.369,39457
+1226,"3,4-Methylpropylsuccinimide",155,868,1683.31,2.33,35741
+1247,"1,1'-Bicyclopropyl, 2,2,2',2'-tetramethyl-",138,760,1711.3,1.921,24742
+1301,"Cyclohexanone, 4-(1,1-dimethylpropyl)-",168,689,1770.76,2.211,13538
+1312,"Phenol, 2-(1-methylethyl)-",136,773,1777.76,1.947,26972
+1346,Quinoline,129,856,1812.74,2.416,53438
+1389,"Formamide, N-cyclohexyl-",127,928,1861.71,2.429,51706
+1470,"1H-Inden-1-one, 2,3-dihydro-",132,880,1928.17,2.508,25455
+1512,"Acetamide, N-cyclohexyl-",141,734,1959.65,2.224,39740
+1584,"1,2,4-Trimethoxybenzene",168,746,2005.13,2.27,24033
+1638,"2-Hexenoic acid, 3,4,4-trimethyl-5-oxo-, (Z)-",170,857,2043.61,2.515,22842
+1662,"(+-)-3-hydroxybutyric acid, acetate",146,885,2064.59,1.94,819018
+1717,"Myrtenoic acid, ethyl ester",194,724,2103.07,1.973,24966
+1733,"Phenol, 2,6-dimethoxy-",154,821,2113.57,2.402,64550
+1750,Methyl 3-(2-hydroxyphenyl)propionate,180,688,2131.06,2.442,6046.5
+1759,3-(1-Hydroxy-ethyl)-3H-benzofuran-2-one,178,548,2138.05,2.171,7261.4
+1808,"Oxazolidine, 2,2-diethyl-3-methyl-",143,830,2173.03,2.561,50149
+1876,"Silane, 1-butynyltrimethyl-",126,671,2229,2.581,14817
+1892,"1-Butanone, 2-chloro-3-methyl-1-[4-(1-methylethyl)phenyl]-",238,715,2239.49,2.587,7857.7
+1897,"Ethanone, 1-(3-hydroxyphenyl)-",136,861,2242.99,2.402,70740
+1924,7-Methylindan-1-one,146,817,2270.98,2.488,12000
+1940,4-Methylphthalaldehyde,148,928,2284.97,2.686,40206
+1942,"Cyclopentanone, 2-(2-octenyl)-",194,710,2288.47,2.006,205576
+1960,"1H-Isoindole-1,3(2H)-dione, 2-methyl-",161,898,2298.96,2.594,19746
+1962,"p-Menthane-1,2,3-triol",188,684,2302.46,2.013,80120
+1977,"Cyclopropane, 1-(1'-propenyl)-2-hydroxymethyl-",112,712,2312.95,2.6,67826
+1980,4'-Methylbutyrophenone,162,558,2316.45,2.508,8318
+1986,"1-Phthalanol, 1,3,3-trimethyl-",178,650,2319.95,2.317,5436
+2011,"2-Propenoic acid, 3-(2-hydroxyphenyl)-, (E)-",164,909,2344.43,2.812,23210
+2030,"Phenol, 2-methoxy-4-(1-propenyl)-",164,601,2361.92,2.125,3304.9
+2069,Phthalimide,147,874,2400.4,2.785,11501
+2077,"1,13-Tetradecadien-3-one",208,599,2407.4,2.145,34363
+2083,"2-Phenylacetamide, N-(1-phenyl-2-propyl)-",253,680,2410.9,2.363,10662
+2087,4-Methylphthalaldehyde,148,921,2414.39,2.752,40272
+2098,2-(2-Chloro-phenyl)-3-(4-methyl-benzoyl)-thiazolidine-4-carboxylic acid,361,604,2431.88,2.534,10024
+2107,"1(3H)-Isobenzofuranone, 5-methyl-",148,710,2438.88,2.726,17457
+2109,"Sulfurous acid, dipentyl ester",222,797,2442.38,1.769,38043
+2123,"Spiro[isobenzofuran-1(3H)-one-3,2'-tetrahydrofuran-5'-one]",204,889,2452.87,2.917,6978
+2135,"5,6-Dimethyl-1H-benzotriazole",147,791,2459.87,2.686,7101.3
+2140,"1,7,7-Trimethyl-2-vinylbicyclo[2.2.1]hept-2-ene",162,573,2463.37,2.554,23140
+2178,4-Methylphthalic anhydride,162,780,2494.85,2.732,8753.2
+2219,trans-calamenene,202,699,2536.82,1.828,4616.7
+2322,4-Ethylphenyl isocyanate,147,681,2620.78,3.023,16356
+2323,"7-Methoxymethyl-2,7-dimethylcyclohepta-1,3,5-triene",164,819,2624.27,2.086,52868
+2438,"Benzothiazole, 2-(methylthio)-",181,743,2725.72,2.713,17881
+2609,1(2H)-Acenaphthylenone,168,726,2858.64,2.831,5162.9
+2842,Benzo[h]cinnoline,180,878,3026.54,2.746,52879
+3024,Pentadecanoic acid,242,875,3166.46,1.617,33890
+3113,"3,7,11,15-Tetramethyl-2-hexadecen-1-ol",296,857,3278.4,1.432,28169
+3219,"Cyclohexanecarboxylic acid, 4-(1,5-dimethyl-3-oxohexyl)-, methyl ester, cis-",268,744,3463.79,2.059,6023.9
+3363,Cyclic octaatomic sulfur,256,764,3600.22,2.904,85185
+3372,"1,3-Dicyclohexylurea",224,799,3607.21,1.947,489773
+3389,"Benzene, 1,1'-(1,3-butadiyne-1,4-diyl)bis-",202,750,3624.7,2.158,2893.5
+3428,"4-(3-Hydroxy-2,6,6-trimethylcyclohex-1-enyl)pent-3-en-2-one",222,557,3649.19,2.158,4070.7
+3494,"6,7-Dimethoxy-1,4-dihydro-2,3-quinoxalinedione",222,601,3691.16,2.059,4895
+3534,trans-Z-à-Bisabolene epoxide,220,780,3722.65,1.894,74784
+3585,"2-Benzothiazolamine, N-cyclohexyl-",232,759,3747.13,1.848,87601
+3590,"Phenol, 2,4'-isopropylidenedi-",228,560,3750.63,1.907,12534
+3653,"1(2H)-Naphthalenone, 3,4-dihydro-3,3,6,8-tetramethyl-",202,569,3785.61,1.584,10001
+3845,"1,4-Naphthoquinone, 2-acetyl-5,8-dihydroxy-3-methoxy-",262,498,3883.55,1.65,11515
+4417,"Oxirane, heptadecyl-",282,890,4121.42,1.294,78004
