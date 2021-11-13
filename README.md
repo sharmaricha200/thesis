@@ -101,7 +101,7 @@ This repository contains software that can be used to automate the manual review
 
 		python CINeMA.py algo -d data/epa_data predict
 
-		python CINeMA.py rt -d data/csvs/epa/sample2.csv 
+		python CINeMA.py rt -d data/epa_data -w data/csvs/epa
 
 ## chromaTOF_auto.py Usage
 
