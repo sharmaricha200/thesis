@@ -97,7 +97,7 @@ This repository contains software that can be used to automate the manual review
 
 * From command line make the directory where CINeMA.py is located your working directory, then use the following commands:
  
-		python CINeMA.py rf predict -d data/epa_data -s model.h5
+		python CINeMA.py rf predict -d data/epa_data -s NN_model.h5
 
 		python CINeMA.py algo -d data/epa_data predict
 
